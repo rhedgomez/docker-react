@@ -1,0 +1,12 @@
+sudo: required
+services: #make sure travis ci understands that make sure that docker cli is pre-installed
+  - docker #by having this, travis automatically install a copy of Docker into our running container
+
+
+
+before_install: #before install: is going to have a series of commands that is going to be executed before our tests run or deploy our project
+                #in this case we are going to build our docker image using Dockerfile.dev
+  - docker build -t rhedgomez/docker-react -f Dockerfile.dev .
+
+script: #this section telling travis how to run the test suite. these are series of commands
+  - docker run rhedgomez/docker-react npm run test -- --coverage #-- --coverage making sure that the test suites automatically exits the instant that the first run is completed and returns back to travis ci
