@@ -10,3 +10,33 @@ before_install: #before install: is going to have a series of commands that is g
 
 script: #this section telling travis how to run the test suite. these are series of commands
   - docker run rhedgomez/docker-react npm run test -- --coverage #-- --coverage making sure that the test suites automatically exits the instant that the first run is completed and returns back to travis ci
+3
+deploy: #adding below bunch of configuration to tell travis CI exactly how to take our application
+          #and deploy it to AWS
+  provider: elasticbeanstalk #travis CI comes pre-configured to deploy our application to handful of different providers
+  region: "sa-east-1"  #provide the region where our EBS was created ex. sa-east-1 from the URL(http://dockerreact-env.fep39ynavx.sa-east-1.elasticbeanstalk.com/)
+  app: "docker-react" #name of the EBS application that you had directed on AWS EBS dashboard
+  env: "DockerReact-env" #environtment name, when created the EBS application name:docker-react that's just kinda setting up a common set of configuration. 
+          #The actual app running inside of docker-react(EBS) is not really reffered to as an app but referred to as "environment"
+  bucket_name: "elasticbeanstalk-sa-east-1-636026759053" #when travis decides to deploy your code base, that is going to take all the files inside of your Github repo that is going to zipped them up
+               #into one single file and then its going to copy all of them, over to an S3 bucket(which is essentially like a hardrive running on AWS)
+               #once it copies all those files over, Travis CI then going to essentially poke at elastic bean stalk
+               #and say "hey i just uploaded this new zipped file,use that to redeploy your application". So we need to provide, the name of the bucket that Travis CI is going to put our zipped file into.
+  bucket_path: "docker-react" #provide the bucket path as well. This bucket(elasticbeanstalk-sa-east-1-636026759053), that's holding the different files. 
+                  #it get reuse for all different elastic bean stalk environment that you create.
+                  #click the name of the bucket and for the bucket path, you are going to look for a folder that is essentially going to be the name of the project that you are working
+                  #when you first create your elastic bean stalk instance, chances are its not going to create a folder automatically.
+                  #That folder is only created the first that you are going to deploy. By default, us the the same name of the ebs application.
+  on:
+    branch: master #anytime we push code to branch: master. Then thats time to deploy.
+
+  #ADDING API KEYS, that are going to gives access to our AWS account over to Travis CI
+  #but do not put explicitly the api keys here, since this repo on github is public
+  #use feature: environment secret provided by travis ci. under travis ci dashboard; it will encrypt the api keys
+  #Use the IAM - is an AWS service that is use to manage API keys that can be use by outside services.
+  access_key_id: $AWS_ACCESS_KEY # is goin to come from the environment variable of $AWS_ACCESS_KEY.This is coming from a local environment config(on the travis ci)
+  secret_access_key:
+    secure: "$AWS_SECRET_KEY" 
+
+
+
