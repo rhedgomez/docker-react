@@ -10,7 +10,7 @@ before_install: #before install: is going to have a series of commands that is g
 
 script: #this section telling travis how to run the test suite. these are series of commands
   - docker run rhedgomez/docker-react npm run test -- --coverage #-- --coverage making sure that the test suites automatically exits the instant that the first run is completed and returns back to travis ci
-3
+
 deploy: #adding below bunch of configuration to tell travis CI exactly how to take our application
           #and deploy it to AWS
   provider: elasticbeanstalk #travis CI comes pre-configured to deploy our application to handful of different providers
